@@ -1,64 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Drawing.Drawing2D;
 using System.Xml.Serialization;
 
 namespace ImageConstructorApp
 {
     public partial class MainForm : Form
     {
-        private PictureBox previewPictureBox;
-        private Panel elementsPanel;
-        private ListBox elementsListBox;
-        private Button addElementButton;
-        private Button exportImageButton;
-        private Button saveProjectButton;
-        private Button loadProjectButton;
-        private ComboBox sizeComboBox;
-        private Label sizeLabel;
-        private Button deleteElementButton;
-        private Panel leftPanel;
-        private Panel rightPanel;
-        private Panel buttonsPanel;
-        private Label titleLabel;
+        public PictureBox previewPictureBox;
+		public Panel elementsPanel;
+		public ListBox elementsListBox;
+		public Button addElementButton;
+		public Button exportImageButton;
+		public Button saveProjectButton;
+		public Button loadProjectButton;
+		public ComboBox sizeComboBox;
+		public Label sizeLabel;
+		public Button deleteElementButton;
+		public Panel leftPanel;
+		public Panel rightPanel;
+		public Panel buttonsPanel;
+		public Label titleLabel;
 
-        private List<BaseElement> elements = new List<BaseElement>();
-        private string projectFilePath = "";
-        private Size canvasSize = new Size(800, 600);
-        /*
-        // Современные цвета
-        private Color primaryColor = Color.FromArgb(41, 128, 185);    // Синий
-        private Color secondaryColor = Color.FromArgb(52, 152, 219);  // Светло-синий
-        private Color accentColor = Color.FromArgb(46, 204, 113);     // Зеленый
-        private Color dangerColor = Color.FromArgb(231, 76, 60);      // Красный
-        private Color darkColor = Color.FromArgb(52, 73, 94);         // Темно-синий
-        private Color lightColor = Color.FromArgb(236, 240, 241);     // Светло-серый
-        private Color borderColor = Color.FromArgb(189, 195, 199);    // Цвет границ
-        */
-         // Аниме-яндере тема 💖
-        private Color primaryColor = Color.FromArgb(155, 89, 182);   // Пурпурно-фиолетовый (романтика)
-        private Color secondaryColor = Color.FromArgb(142, 68, 173);   // Тёмно-фиолетовый (глубина)
-        private Color accentColor = Color.FromArgb(230, 126, 177);  // Розово-лавандовый (сладость)
-        private Color dangerColor = Color.FromArgb(231, 76, 60);    // Красный (страсть... и предупреждение)
-        private Color darkColor = Color.FromArgb(44, 62, 80);     // Очень тёмно-серо-синий (фон текста)
-        private Color lightColor = Color.FromArgb(30, 39, 46);     // Почти чёрный фон (ночной экран)
-        private Color borderColor = Color.FromArgb(70, 80, 90);     // Мягкая граница
-        private Color panelDark = Color.FromArgb(40, 48, 55);     // Панели (тёплый тёмный)
-        private Color listBg = Color.FromArgb(45, 52, 54);     // Фон списка
-        public MainForm()
+		public List<BaseElement> elements = new List<BaseElement>();
+		public string projectFilePath = "";
+		public Size canvasSize = new Size(800, 600);
+
+     public MainForm()
         {
             InitializeComponent();
             InitializeComponentUI();
             InitializeCustomComponents();
-            ApplyModernStyling();
+            UIStylist.ApplyModernStyling(this);
         }
 
         private void InitializeComponentUI()
@@ -66,102 +37,12 @@ namespace ImageConstructorApp
             this.Text = "Конструктор изображений 1.2.1";
             this.Size = new Size(1200, 800);
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = lightColor;
+            this.BackColor = UIStylist.lightColor;
             this.Font = new Font("Segoe UI", 15);
         }
 
-        private void ApplyModernStyling()
-        {
-            this.BackColor = lightColor;
 
-            // Стилизация кнопок
-            StyleButton(addElementButton, primaryColor);
-            StyleButton(exportImageButton, accentColor);
-            StyleButton(saveProjectButton, secondaryColor);
-            StyleButton(loadProjectButton, secondaryColor);
-            StyleButton(deleteElementButton, dangerColor);
-
-            // Список элементов
-            elementsListBox.BackColor = listBg;
-            elementsListBox.ForeColor = Color.White;
-            elementsListBox.BorderStyle = BorderStyle.None;
-            elementsListBox.Font = new Font("Segoe UI", 9.5f);
-            elementsListBox.DrawMode = DrawMode.OwnerDrawFixed;
-            elementsListBox.DrawItem += ElementsListBox_DrawItem;
-            elementsListBox.SelectionMode = SelectionMode.One;
-
-            // ComboBox
-            sizeComboBox.FlatStyle = FlatStyle.Flat;
-            sizeComboBox.BackColor = panelDark;
-            sizeComboBox.ForeColor = Color.White;
-            sizeComboBox.Font = new Font("Segoe UI", 9);
-            sizeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            sizeComboBox.DrawMode = DrawMode.OwnerDrawFixed;
-            sizeComboBox.DrawItem += (s, e) =>
-            {
-                e.DrawBackground();
-                using (var brush = new SolidBrush(e.State.HasFlag(DrawItemState.Selected) ? accentColor : Color.White))
-                {
-                    e.Graphics.DrawString(sizeComboBox.Items[e.Index].ToString(), e.Font, brush, e.Bounds);
-                }
-                e.DrawFocusRectangle();
-            };
-
-            // Панели
-            leftPanel.BackColor = Color.FromArgb(35, 43, 50); // чуть светлее фона
-            rightPanel.BackColor = lightColor;
-            buttonsPanel.BackColor = panelDark;
-            buttonsPanel.BorderStyle = BorderStyle.None;
-
-            // Заголовок
-            if (titleLabel != null)
-                titleLabel.ForeColor = accentColor;
-        }
-
-        private void StyleButton(Button button, Color color)
-        {
-            if (button == null) return;
-
-            button.FlatStyle = FlatStyle.Flat;
-            button.FlatAppearance.BorderSize = 0;
-            button.FlatAppearance.MouseOverBackColor = Color.Transparent;
-            button.FlatAppearance.MouseDownBackColor = Color.Transparent;
-            button.BackColor = Color.Transparent;
-            button.ForeColor = Color.White;
-            button.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
-            button.Cursor = Cursors.Hand;
-            button.Padding = new Padding(8, 4, 8, 4);
-            button.FlatAppearance.BorderColor = Color.Red;
-
-            // Создаём панель-обёртку для красивого фона
-            var wrapper = new Panel
-            {
-                Size = new Size(button.Width + 16, button.Height + 8),
-                Location = new Point(button.Location.X - 8, button.Location.Y - 4),  
-                BackColor = color,
-                Parent = button.Parent
-            };
-            using (var path = new GraphicsPath())
-            {
-                var radius = 15;
-                var rect = new Rectangle(0, 0, wrapper.Width, wrapper.Height);
-                path.AddArc(rect.X, rect.Y, radius, radius, 180, 90);
-                path.AddArc(rect.Right - radius, rect.Y, radius, radius, 270, 90);
-                path.AddArc(rect.Right - radius, rect.Bottom - radius, radius, radius, 0, 90);
-                path.AddArc(rect.X, rect.Bottom - radius, radius, radius, 90, 90);
-                path.CloseFigure();
-                wrapper.Region = new Region(path);
-            }
-            button.Parent = wrapper;
-            button.Dock = DockStyle.Fill;
-            button.BringToFront();
-
-            // Эффекты наведения на обёртку
-            wrapper.MouseEnter += (s, e) => wrapper.BackColor = ControlPaint.Light(color, 0.2f);
-            wrapper.MouseLeave += (s, e) => wrapper.BackColor = color;
-        }
-
-        private void ElementsListBox_DrawItem(object sender, DrawItemEventArgs e)
+        public void ElementsListBox_DrawItem(object sender, DrawItemEventArgs e)
         {
             if (e.Index < 0) return;
 
@@ -169,8 +50,8 @@ namespace ImageConstructorApp
 
             bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
 
-            Color backColor = isSelected ? primaryColor : panelDark;
-            Color foreColor = isSelected ? Color.White : primaryColor;
+            Color backColor = isSelected ? UIStylist.primaryColor : UIStylist.panelDark;
+            Color foreColor = isSelected ? Color.White : UIStylist.primaryColor;
 
             using (var backBrush = new SolidBrush(backColor))
             using (var foreBrush = new SolidBrush(foreColor))
@@ -178,7 +59,7 @@ namespace ImageConstructorApp
                 e.Graphics.FillRectangle(backBrush, e.Bounds);
 
                 // Иконка элемента
-                var elementIcon = GetElementIcon(elements[e.Index]);
+                var elementIcon = ElementsManager.GetElementIcon(elements[e.Index]);
                 if (elementIcon != null)
                 {
                     e.Graphics.DrawImage(elementIcon, e.Bounds.X + 5, e.Bounds.Y + 2, 16, 16);
@@ -193,45 +74,6 @@ namespace ImageConstructorApp
             e.DrawFocusRectangle();
         }
 
-        private Image GetElementIcon(BaseElement element)
-        {
-            // Возвращаем иконки для разных типов элементов
-            if (element is BackgroundElement) return CreateIconImage(primaryColor, "BG");
-            if (element is TextElement) return CreateIconImage(accentColor, "T");
-            if (element is ImageElement) return CreateIconImage(secondaryColor, "IMG");
-            if (element is AwardElement) return CreateIconImage(Color.Orange, "A");
-            if (element is EventElement) return CreateIconImage(Color.Purple, "E");
-            if (element is BPElement) return CreateIconImage(Color.Teal, "BP");
-            if (element is ImageRowElement) return CreateIconImage(Color.Green, "R");
-
-            return null;
-        }
-
-        private Image CreateIconImage(Color color, string text)
-        {
-            var bmp = new Bitmap(16, 16);
-            using (var g = Graphics.FromImage(bmp))
-            {
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-
-                // Фон иконки
-                using (var brush = new SolidBrush(color))
-                {
-                    g.FillEllipse(brush, 0, 0, 15, 15);
-                }
-
-                // Текст иконки
-                using (var font = new Font("Arial", 6, FontStyle.Bold))
-                using (var brush = new SolidBrush(Color.White))
-                {
-                    var size = g.MeasureString(text, font);
-                    g.DrawString(text, font, brush,
-                                (16 - size.Width) / 2,
-                                (16 - size.Height) / 2);
-                }
-            }
-            return bmp;
-        }
 
         private void InitializeCustomComponents()
         {
@@ -240,7 +82,7 @@ namespace ImageConstructorApp
             {
                 Text = "Конструктор изображений 1.2.1",
                 Font = new Font("Segoe UI", 18, FontStyle.Bold),
-                ForeColor = accentColor,
+                ForeColor = UIStylist.accentColor,
                 Height = 60,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Dock = DockStyle.Top
@@ -299,30 +141,30 @@ namespace ImageConstructorApp
             };
 
             // Группа управления проектом
-            var projectGroup = CreateGroupBox("Управление проектом", 0);
+            var projectGroup = ElementsManager.CreateGroupBox("Управление проектом", 0);
 
             // Группа элементов
-            var elementsGroup = CreateGroupBox("Элементы", 80);
+            var elementsGroup = ElementsManager.CreateGroupBox("Элементы", 80);
 
             // Группа экспорта
-            var exportGroup = CreateGroupBox("Экспорт и размер", 160);
+            var exportGroup = ElementsManager.CreateGroupBox("Экспорт и размер", 160);
             exportGroup.Size = new Size(320, 150); 
             // Кнопки управления проектом
-            saveProjectButton = CreateButton("💾 Сохранить проект", new Point(13, 27));
+            saveProjectButton = ElementsManager.CreateButton("💾 Сохранить проект", new Point(13, 27));
             saveProjectButton.Click += SaveProjectButton_Click;
 
-            loadProjectButton = CreateButton("📂 Загрузить проект", new Point(172, 27));
+            loadProjectButton = ElementsManager.CreateButton("📂 Загрузить проект", new Point(172, 27));
             loadProjectButton.Click += LoadProjectButton_Click;
 
             // Кнопки элементов
-            addElementButton = CreateButton("➕ Добавить элемент", new Point(13, 27));
+            addElementButton = ElementsManager.CreateButton("➕ Добавить элемент", new Point(13, 27));
             addElementButton.Click += AddElementButton_Click;
 
-            deleteElementButton = CreateButton("🗑️ Удалить элемент", new Point(172, 27));
+            deleteElementButton = ElementsManager.CreateButton("🗑️ Удалить элемент", new Point(172, 27));
             deleteElementButton.Click += DeleteElementButton_Click;
 
             // Кнопки экспорта и размер
-            exportImageButton = CreateButton("📤 Экспорт в PNG", new Point(100, 25));
+            exportImageButton = ElementsManager.CreateButton("📤 Экспорт в PNG", new Point(100, 25));
             exportImageButton.Click += ExportImageButton_Click;
 
             sizeLabel = new Label
@@ -331,7 +173,7 @@ namespace ImageConstructorApp
                 Location = new Point(120, 70),
                 Size = new Size(120, 30),
                 Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                ForeColor = primaryColor,
+                ForeColor = UIStylist.primaryColor,
 
             };
 
@@ -366,7 +208,7 @@ namespace ImageConstructorApp
                 Text = "Список элементов",
                 Dock = DockStyle.Fill,
                 Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                ForeColor = darkColor,
+                ForeColor = UIStylist.darkColor,
                 Margin = new Padding(0, 10, 35, 0)
             };
 
@@ -408,7 +250,7 @@ namespace ImageConstructorApp
                     new ColumnStyle(SizeType.Absolute, 350) // Правая панель
                 },
                 Padding = new Padding(10),
-                BackColor = lightColor
+                BackColor = UIStylist.lightColor
             };
 
             mainContainer.Controls.Add(leftPanel, 0, 0);
@@ -416,42 +258,6 @@ namespace ImageConstructorApp
 
            // this.Controls.AddRange(new Control[] { titleLabel, mainContainer });
             this.Controls.AddRange(new Control[] {  mainContainer });
-        }
-
-        private GroupBox CreateGroupBox(string text, int y)
-        {
-            var box = new GroupBox
-            {
-                Text = "",
-                Location = new Point(0, y),
-                Size = new Size(320, 70),
-                BackColor = Color.Transparent
-            };
-
-            // Добавляем красивую надпись поверх
-            var label = new Label
-            {
-                Text = "✦ " + text,
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
-                ForeColor = primaryColor,
-                Location = new Point(10, -5),
-                AutoSize = true
-            };
-            box.Controls.Add(label);
-
-            return box;
-        }
-        private Button CreateButton(string text, Point location)
-        {
-            return new Button
-            {
-                Text = text,
-                Location = location,
-                Size = new Size(135, 30),
-                Font = new Font("Segoe UI", 9),
-                TextAlign = ContentAlignment.MiddleLeft,
-                Cursor = Cursors.Hand
-            };
         }
 
 
