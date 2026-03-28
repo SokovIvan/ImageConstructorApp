@@ -25,7 +25,6 @@ namespace ImageConstructorApp
     public enum AwardImageType
     {
         Custom,
-        Books,
         Points,
         Experience,
         Spheres,
@@ -56,8 +55,9 @@ namespace ImageConstructorApp
         SealSpace,
         SealSpiritual,
         SealTerrible,
-        SoulFragments       
-    }
+        SoulFragments,
+        Books,
+	}
 
     public enum ArrowDirection
     {

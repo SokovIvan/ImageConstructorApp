@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -115,9 +116,6 @@ namespace ImageConstructorApp
                 case AwardImageType.Points:
                     imagePathTochange = "Images/Awards/Points.png";
                     break;
-				case AwardImageType.Books:
-					imagePathTochange = "Images/Awards/Books.png";
-					break;
 				case AwardImageType.Experience:
                     imagePathTochange = "Images/Awards/Experince.png";
                     break;
@@ -207,8 +205,11 @@ namespace ImageConstructorApp
                     break;
                 case AwardImageType.SoulFragments:
                     imagePathTochange = "Images/Awards/SoulFragments.png";
-                    break;            
-                default: return "";
+                    break;
+				case AwardImageType.Books:
+					imagePathTochange = "Images/Awards/Books.png";
+					break;
+				default: return "";
             }
             return imagePathTochange;
         }
@@ -423,7 +424,10 @@ namespace ImageConstructorApp
                                 case AwardImageType.SoulFragments:
                                     imageElement.ImagePath = "Images/Awards/SoulFragments.png";
                                     break;
-                            }
+								case AwardImageType.Books:
+									imageElement.ImagePath = "Images/Awards/Books.png";
+									break;
+							}
 
                         }
                     }
@@ -1702,6 +1706,7 @@ namespace ImageConstructorApp
                         var combo = (ComboBox)s;
                         if (combo.SelectedItem == null) return;
                         var newType = (AwardImageType)Enum.Parse(typeof(AwardImageType), combo.SelectedItem.ToString());
+                        Console.WriteLine(newType.ToString());
                         string newPath = newType == AwardImageType.Custom ? "" : GetImagePathByType(newType);
 
                         // Применяем ТОЛЬКО к иконкам первой строки
@@ -1809,7 +1814,8 @@ namespace ImageConstructorApp
                         var combo = (ComboBox)s;
                         if (combo.SelectedItem == null) return;
                         var newType = (AwardImageType)Enum.Parse(typeof(AwardImageType), combo.SelectedItem.ToString());
-                        string newPath = newType == AwardImageType.Custom ? "" : GetImagePathByType(newType);
+						Console.WriteLine(newType.ToString());
+						string newPath = newType == AwardImageType.Custom ? "" : GetImagePathByType(newType);
 
                         // Применяем ТОЛЬКО к иконкам первой строки
                         for (int i = 3; i < bpElement.CaptionElements.Count; i += 4)
@@ -2057,7 +2063,10 @@ namespace ImageConstructorApp
                                 case AwardImageType.SoulFragments:
                                     awardElement.ImagePath = "Images/Awards/SoulFragments.png";
                                     break;
-                            }
+								case AwardImageType.Books:
+									awardElement.ImagePath = "Images/Awards/Books.png";
+									break;
+							}
                             
                         }
                     }
